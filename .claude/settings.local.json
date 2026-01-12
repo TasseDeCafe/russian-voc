@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(pip3 install:*)",
+      "Skill(clean-russian-exchange)",
+      "Skill(clean-language-reactor)",
+      "Skill(clean-russian-lesson)",
+      "Bash(python create_deck.py:*)"
+    ]
+  }
+}
