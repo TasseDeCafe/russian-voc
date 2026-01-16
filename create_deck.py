@@ -218,8 +218,8 @@ def main():
     )
     parser.add_argument(
         "-n", "--name",
-        default="Russian Vocabulary",
-        help="Deck name (default: Russian Vocabulary)",
+        default=None,
+        help="Deck name (default: 'Russian Vocabulary' for production, 'Russian Passive Vocabulary' for recognition)",
     )
     parser.add_argument(
         "-m", "--mode",
@@ -229,6 +229,13 @@ def main():
     )
 
     args = parser.parse_args()
+
+    # Set default deck name based on mode
+    if args.name is None:
+        if args.mode == "production":
+            args.name = "Russian Vocabulary"
+        else:
+            args.name = "Russian Passive Vocabulary"
 
     # Validate input files
     for csv_file in args.csv_files:

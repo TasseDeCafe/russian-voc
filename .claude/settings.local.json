@@ -6,7 +6,8 @@
       "Skill(clean-russian-exchange)",
       "Skill(clean-language-reactor)",
       "Skill(clean-russian-lesson)",
-      "Bash(python create_deck.py:*)"
+      "Bash(python create_deck.py:*)",
+      "Bash(python preprocess_language_reactor.py:*)"
     ]
   }
 }

@@ -3,24 +3,31 @@ name: clean-language-reactor
 description: Clean up Russian vocabulary CSV exports from Language Reactor (YouTube subtitle learning extension). Use when the user asks to process or clean up a Language Reactor CSV file.
 ---
 
-# Clean Language Reactor Exports
+# Clean YouTube Subtitle Vocabulary Exports
 
-Transform Language Reactor CSV exports into vocabulary flashcards for recognition practice.
+Transform vocabulary exports from YouTube subtitle extensions into flashcards for recognition practice.
+
+Supports multiple formats:
+- Language Reactor exports (WORD| prefix format)
+- Simple CSV exports (word, sentence, timestamp, videoTitle, videoId)
 
 ## Workflow
 
-1. **Preprocess** the raw Language Reactor export:
+1. **Preprocess** the raw export:
    ```bash
    python preprocess_language_reactor.py export.csv -o preprocessed.csv
    ```
    This will:
+   - Auto-detect the CSV format
    - Parse the export and extract word data
+   - Identify multi-word chunks (collocations) - marked with "Is Chunk=yes"
    - Automatically fetch the YouTube transcript
    - Output `preprocessed.csv` and `preprocessed.transcript.txt`
 
 2. **Clean up** the preprocessed file (with Claude):
    - Read both the preprocessed CSV and the transcript
-   - Identify collocations from context
+   - Convert chunks to nominative form (e.g., "собственным успехом" → "со́бственный успе́х")
+   - Add translations
    - Create simpler example sentences
    - Add stress marks
    - Output the final 4-column CSV
@@ -62,12 +69,16 @@ When cleaning up, read:
 - The preprocessed CSV (word, translation, context, POS)
 - The transcript file (full video text for understanding context)
 
-### 2. Identify Collocations
+### 2. Handle Chunks and Collocations
 
-Language Reactor only allows clicking single words, but some should be studied together. Use the transcript to identify:
+**Pre-selected chunks**: Entries marked "Is Chunk=yes" were selected as multi-word phrases by the user. Keep these as collocations but convert to nominative form:
+- `собственным успехом` → `со́бственный успе́х` (one's own success)
+- `качественной медицине` → `ка́чественная медици́на` (quality healthcare)
+
+**Identify additional collocations**: Some single words should be studied with their common collocations. Use the transcript to identify:
 - `птичий` → `на пти́чьих права́х` (on precarious terms)
 - `поразить` → `пораже́ны в права́х` (disenfranchised)
-- `острый` → `о́стрые углы́` (sharp edges)
+- `доступ` → `до́ступ к (+ dat.)` (access to)
 
 ### 3. Create Simpler Example Sentences
 
@@ -89,7 +100,14 @@ Use the full transcript to understand the meaning and context.
 - Skip monosyllables
 - Skip words with ё (always stressed)
 
-### 5. CSV Quoting
+### 5. Verb Pairs
+- When the word is a verb, include both the perfective and imperfective forms
+- When the verb is used with a preposition in the context, include that preposition and the case used with that preposition in this context
+Format: `imperfective/perfective` (e.g., `ви́деть/уви́деть`)
+- Only include one form if the other isn't commonly used
+- Include both when learners should know the pair
+
+### 6. CSV Quoting
 
 Wrap any field containing commas in double quotes.
 

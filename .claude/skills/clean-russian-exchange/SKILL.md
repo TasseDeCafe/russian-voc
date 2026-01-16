@@ -41,7 +41,8 @@ Language exchange notes are often messy with fragments, partial sentences, or ju
 - Only add stress marks in column 1, not in example sentences
 
 ### 3. Verb Pairs
-
+- When the word is a verb, include both the perfective and imperfective forms
+- When the verb is used with a preposition in the context, include that preposition and the case used with that preposition in this context
 Format: `imperfective/perfective` (e.g., `ви́деть/уви́деть`)
 - Only include one form if the other isn't commonly used
 - Include both when learners should know the pair
