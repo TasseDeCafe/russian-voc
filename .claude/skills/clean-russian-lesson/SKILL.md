@@ -40,31 +40,38 @@ Lesson notes often contain full Russian sentences or phrases. Extract:
 - Skip words with ё (always stressed)
 - Only add stress marks in column 1, not in example sentences
 
-### 3. Verb Pairs
+### 3. Gender for Soft Sign Nouns
 
-Format: `imperfective/perfective` (e.g., `учи́ть/вы́учить`)
-- Only include one form if the other isn't commonly used
+- For nouns ending in soft sign (ь), indicate gender with `(m.)` if masculine
+- Most soft-sign nouns are feminine, so only mark masculine ones
+- Examples: `день (m.)` — day, `гость (m.)` — guest, `дождь (m.)` — rain
+
+### 4. Verb Pairs
+- When the word is a verb, include both the perfective and imperfective forms
+- When the verb is used with a preposition in the context, include that preposition and the case used with that preposition in this context
+  Format: `imperfective/perfective` (e.g., `ви́деть/уви́деть`)
+- Only include one form if the other isn't commonly used or doesn't make sense
 - Include both when learners should know the pair
 
-### 4. Grammar Notes
+### 5. Grammar Notes
 
 When a word requires a specific case or preposition, include it:
 - `гото́виться к (+ dat.)` — to prepare for
 - `зави́сеть от (+ gen.)` — to depend on
 - `знако́миться с (+ instr.)` — to meet
 
-### 5. Full Sentences
+### 6. Full Sentences
 
 - Create complete example sentences if the notes only have fragments
 - Use the original sentence from the lesson if it's already complete
 - Keep examples natural and relevant
 
-### 6. Remove Duplicates
+### 7. Remove Duplicates
 
 - If the same phrase appears multiple times, keep only one entry
 - Merge related entries when appropriate
 
-### 7. CSV Quoting
+### 8. CSV Quoting
 
 - Wrap any field containing commas in double quotes
 - Example: `"Зависит от того, чем ты занимаешься."`

@@ -40,20 +40,26 @@ Language exchange notes are often messy with fragments, partial sentences, or ju
 - Skip words with ё (always stressed)
 - Only add stress marks in column 1, not in example sentences
 
-### 3. Verb Pairs
+### 3. Gender for Soft Sign Nouns
+
+- For nouns ending in soft sign (ь), indicate gender with `(m.)` if masculine
+- Most soft-sign nouns are feminine, so only mark masculine ones
+- Examples: `день (m.)` — day, `гость (m.)` — guest, `дождь (m.)` — rain
+
+### 4. Verb Pairs
 - When the word is a verb, include both the perfective and imperfective forms
 - When the verb is used with a preposition in the context, include that preposition and the case used with that preposition in this context
 Format: `imperfective/perfective` (e.g., `ви́деть/уви́деть`)
-- Only include one form if the other isn't commonly used
+- Only include one form if the other isn't commonly used or doesn't make sense
 - Include both when learners should know the pair
 
-### 4. Full Sentences
+### 5. Full Sentences
 
 - Turn fragments into complete, natural example sentences
 - Keep examples simple and relevant to the vocabulary
 - Example sentences should demonstrate typical usage
 
-### 5. CSV Quoting
+### 6. CSV Quoting
 
 - Wrap any field containing commas in double quotes
 - Example: `"Даже если у тебя есть опыт, условия другие."`
