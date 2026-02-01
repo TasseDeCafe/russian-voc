@@ -149,6 +149,7 @@ def read_csv(filepath: Path) -> list[dict]:
                     "translation": row[1].strip() if len(row) > 1 else "",
                     "example": row[2].strip() if len(row) > 2 else "",
                     "example_translation": row[3].strip() if len(row) > 3 else "",
+                    "tags": row[4].strip().split() if len(row) > 4 and row[4].strip() else [],
                 }
                 if entry["russian"]:
                     entries.append(entry)
@@ -193,6 +194,7 @@ def create_deck(
                 entry["example_translation"],
             ],
             guid=generate_guid(entry["russian"], mode),
+            tags=entry.get("tags", []),
         )
         deck.add_note(note)
 
