@@ -32,6 +32,59 @@ Supports multiple formats:
    - Add stress marks
    - Output the final 4-column CSV
 
+## Transcript Cache (Whisper-generated subtitles)
+
+The user has a browser extension that can generate subtitles using OpenAI's Whisper when videos don't have good auto-generated subs. These higher-quality transcripts are stored in a cache file.
+
+### Cache Format
+
+The cache is a JSON file (e.g., `transcript-cache-backup-YYYY-MM-DD.json`) containing an array of objects:
+
+```json
+[
+  {
+    "videoId": "LtpJgrrcHtI",
+    "srt": "1\n00:00:00,000 --> 00:00:04,840\nКлючевым фактором он считал успеха...\n\n2\n..."
+  },
+  ...
+]
+```
+
+### When to Use the Cache
+
+If the user says something like:
+- "use the subtitles from the cache for video ID `XYZ`"
+- "there's a nicer transcript in the cache for `XYZ`"
+- "use the transcript cache for this video"
+
+Then **prefer the cache transcript** over fetching from YouTube via the python library.
+
+### How to Extract from Cache
+
+```python
+import json
+
+with open('transcript-cache-backup-YYYY-MM-DD.json') as f:
+    data = json.load(f)
+    for item in data:
+        if item['videoId'] == 'TARGET_VIDEO_ID':
+            srt = item['srt']
+            # Parse SRT and extract text lines
+            lines = []
+            for block in srt.strip().split('\n\n'):
+                parts = block.split('\n')
+                if len(parts) >= 3:
+                    text = ' '.join(parts[2:])
+                    lines.append(text)
+            transcript = '\n'.join(lines)
+            # Save to file
+            with open('video.transcript.txt', 'w') as out:
+                out.write(transcript)
+            break
+```
+
+The cache transcripts have better punctuation, capitalization, and accuracy than YouTube's auto-generated captions.
+
 ## Examples
 
 See the `examples/` directory:
@@ -49,6 +102,8 @@ Use `--mode recognition` when creating the deck:
 ```bash
 python3 create_deck.py --mode recognition cleaned.csv -o passive.apkg
 ```
+
+**Important**: Do NOT automatically create the deck after generating the CSV. The user often wants to review and edit the CSV first. Ask the user if they want to create the deck.
 
 ## CSV Output Format
 

@@ -91,3 +91,13 @@ When a word requires a specific case or preposition, include it:
 семья́ жены́,wife's family,Семья моей жены живёт в Бельгии.,My wife's family lives in Belgium.
 зави́сеть от (+ gen.),to depend on,"Зависит от того, чем ты занимаешься.","It depends on what you do."
 ```
+
+## Creating the Anki Deck
+
+After the cleaned CSV is ready, the user may want to create an Anki deck using `create_deck.py`:
+
+```bash
+python3 create_deck.py cleaned.csv -o deck.apkg
+```
+
+**Important**: Do NOT automatically create the deck after generating the CSV. The user often wants to review and edit the CSV first. Ask the user if they want to create the deck.

@@ -79,3 +79,13 @@ Format: `imperfective/perfective` (e.g., `ви́деть/уви́деть`)
 физи́ческое наси́лие,physical violence,Физическое насилие — это серьёзное преступление.,Physical violence is a serious crime.
 лома́ться/слома́ться,to break down,Машина сломалась посреди дороги.,The car broke down in the middle of the road.
 ```
+
+## Creating the Anki Deck
+
+After the cleaned CSV is ready, the user may want to create an Anki deck using `create_deck.py`:
+
+```bash
+python3 create_deck.py cleaned.csv -o deck.apkg
+```
+
+**Important**: Do NOT automatically create the deck after generating the CSV. The user often wants to review and edit the CSV first. Ask the user if they want to create the deck.
