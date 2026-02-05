@@ -20,7 +20,7 @@ See the `examples/` directory:
 | Column | Content |
 |--------|---------|
 | 1 | Russian word/phrase with stress marks |
-| 2 | English translation |
+| 2 | English translation (single best translation fitting the example sentence context) |
 | 3 | Example sentence in Russian |
 | 4 | English translation of example |
 
@@ -53,25 +53,31 @@ Lesson notes often contain full Russian sentences or phrases. Extract:
 - Only include one form if the other isn't commonly used or doesn't make sense
 - Include both when learners should know the pair
 
-### 5. Grammar Notes
+### 5. Single Translation
+
+- Provide only **one** English translation per entry — the one that best fits the context of the example sentence
+- Do not list multiple synonyms separated by `/` (e.g., avoid `to develop / to grow`)
+- If the word has multiple meanings, pick the meaning used in the example
+
+### 6. Grammar Notes
 
 When a word requires a specific case or preposition, include it:
 - `гото́виться к (+ dat.)` — to prepare for
 - `зави́сеть от (+ gen.)` — to depend on
 - `знако́миться с (+ instr.)` — to meet
 
-### 6. Full Sentences
+### 7. Full Sentences
 
 - Create complete example sentences if the notes only have fragments
 - Use the original sentence from the lesson if it's already complete
 - Keep examples natural and relevant
 
-### 7. Remove Duplicates
+### 8. Remove Duplicates
 
 - If the same phrase appears multiple times, keep only one entry
 - Merge related entries when appropriate
 
-### 8. CSV Quoting
+### 9. CSV Quoting
 
 - Wrap any field containing commas in double quotes
 - Example: `"Зависит от того, чем ты занимаешься."`

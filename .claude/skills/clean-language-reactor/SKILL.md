@@ -112,9 +112,17 @@ python3 create_deck.py --mode recognition cleaned.csv -o passive.apkg
 | Column | Content |
 |--------|---------|
 | 1 | Russian word/phrase with stress marks |
-| 2 | English translation |
+| 2 | English translation (single best translation) |
 | 3 | Example sentence in Russian |
 | 4 | English translation of example |
+
+### Translation Rule: One Translation Only
+
+Prefer a **single English translation** that best matches the meaning in context. Avoid listing multiple synonyms separated by slashes or commas. The goal is to minimize information on each flashcard for faster review.
+
+- Pick the one translation that fits the video context best
+- Only add a second meaning in parentheses if the word is genuinely ambiguous and the learner might confuse it (e.g., `мо́лния` → "zipper (also: lightning)")
+- For collocations with a parenthetical clarification, keep it concise: `пораже́ны в права́х` → "disenfranchised"
 
 ## Processing Rules
 
@@ -182,7 +190,7 @@ Word,Translation,Context (RU),Context (EN),POS
 
 **Cleaned output** (see `examples/language-reactor-cleaned.csv`):
 ```
-на пти́чьих права́х,on precarious terms (no legal rights),Без гражданства ты на птичьих правах.,Without citizenship you're on precarious terms.
+на пти́чьих права́х,on precarious terms,Без гражданства ты на птичьих правах.,Without citizenship you're on precarious terms.
 ```
 
 Note: The single word `птичий` became the collocation `на пти́чьих права́х` because that's how it was used in context.
