@@ -14,7 +14,10 @@
       "WebFetch(domain:api.github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(curl:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(head -1 \"kindle_cloud_reader_csv_files/kcc_results\\(8\\).csv\")",
+      "Read(//tmp/**)",
+      "Bash(head:*)"
     ]
   }
 }

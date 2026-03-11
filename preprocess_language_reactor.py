@@ -57,14 +57,14 @@ def detect_format(filepath: Path) -> str:
     return "simple"
 
 
-def parse_simple_csv(filepath: Path) -> tuple[list[dict], str | None]:
+def parse_simple_csv(filepath: Path) -> tuple[list[dict], dict[str, str]]:
     """Parse simple CSV format (word, sentence, timestamp, videoTitle, videoId).
 
     Returns:
-        Tuple of (entries, video_id)
+        Tuple of (entries, videos) where videos maps video_id -> video_title
     """
     entries = []
-    video_id = None
+    videos = {}  # video_id -> video_title
 
     with open(filepath, encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -73,9 +73,10 @@ def parse_simple_csv(filepath: Path) -> tuple[list[dict], str | None]:
             word = row.get("word", "").strip()
             sentence = row.get("sentence", "").strip()
             vid = row.get("videoId", "").strip()
+            title = row.get("videoTitle", "").strip()
 
-            if video_id is None and vid:
-                video_id = vid
+            if vid and vid not in videos:
+                videos[vid] = title
 
             if word:
                 # Check if it's a multi-word chunk (collocation)
@@ -89,20 +90,21 @@ def parse_simple_csv(filepath: Path) -> tuple[list[dict], str | None]:
                     "context_ru": sentence,
                     "context_en": "",  # Not provided in this format
                     "is_chunk": is_chunk,
+                    "video_id": vid,
                 }
                 entries.append(entry)
 
-    return entries, video_id
+    return entries, videos
 
 
-def parse_language_reactor_export(filepath: Path) -> tuple[list[dict], str | None]:
+def parse_language_reactor_export(filepath: Path) -> tuple[list[dict], dict[str, str]]:
     """Parse Language Reactor export file.
 
     Returns:
-        Tuple of (entries, video_id)
+        Tuple of (entries, videos) where videos maps video_id -> video_title
     """
     entries = []
-    video_id = None
+    videos = {}  # video_id -> video_title
 
     with open(filepath, encoding="utf-8") as f:
         for line in f:
@@ -122,10 +124,15 @@ def parse_language_reactor_export(filepath: Path) -> tuple[list[dict], str | Non
             lemma = prefix_parts[1]
 
             # Extract video ID (field 15, format: yt_VIDEOID)
-            if video_id is None and len(fields) > 15:
+            vid = ""
+            if len(fields) > 15:
                 vid_field = fields[15]
                 if vid_field.startswith("yt_"):
-                    video_id = vid_field[3:]  # Remove "yt_" prefix
+                    vid = vid_field[3:]  # Remove "yt_" prefix
+                    if vid not in videos:
+                        # Use video title from field 14 if available, else empty
+                        title = fields[14] if len(fields) > 14 else ""
+                        videos[vid] = title
 
             entry = {
                 "lemma": lemma,
@@ -135,12 +142,13 @@ def parse_language_reactor_export(filepath: Path) -> tuple[list[dict], str | Non
                 "context_ru": fields[2].strip('"') if len(fields) > 2 else "",
                 "context_en": fields[3].strip('"') if len(fields) > 3 else "",
                 "is_chunk": False,
+                "video_id": vid,
             }
 
             if entry["lemma"] and (entry["translation"] or entry["context_ru"]):
                 entries.append(entry)
 
-    return entries, video_id
+    return entries, videos
 
 
 def fetch_transcript(video_id: str, lang: str = "ru") -> str | None:
@@ -183,21 +191,28 @@ def fetch_transcript(video_id: str, lang: str = "ru") -> str | None:
     return None
 
 
-def write_preprocessed_csv(entries: list[dict], output_path: Path):
+def write_preprocessed_csv(entries: list[dict], output_path: Path, videos: dict[str, str]):
     """Write preprocessed entries to a CSV file."""
+    multi_video = len(videos) > 1
     with open(output_path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["Word", "Translation", "Context (RU)", "Context (EN)", "POS", "Is Chunk"])
+        header = ["Word", "Translation", "Context (RU)", "Context (EN)", "POS", "Is Chunk"]
+        if multi_video:
+            header.append("Video")
+        writer.writerow(header)
 
         for entry in entries:
-            writer.writerow([
+            row = [
                 entry["lemma"],
                 entry.get("translation", ""),
                 entry.get("context_ru", ""),
                 entry.get("context_en", ""),
                 entry.get("pos", ""),
                 "yes" if entry.get("is_chunk") else "",
-            ])
+            ]
+            if multi_video:
+                row.append(videos.get(entry.get("video_id", ""), ""))
+            writer.writerow(row)
 
 
 def main():
@@ -239,9 +254,9 @@ def main():
     # Parse based on format
     print(f"Parsing {args.input_file}...")
     if fmt == "simple":
-        entries, video_id = parse_simple_csv(args.input_file)
+        entries, videos = parse_simple_csv(args.input_file)
     else:
-        entries, video_id = parse_language_reactor_export(args.input_file)
+        entries, videos = parse_language_reactor_export(args.input_file)
 
     print(f"Found {len(entries)} word entries")
 
@@ -250,26 +265,39 @@ def main():
     if chunks:
         print(f"  Including {chunks} multi-word chunks (collocations)")
 
-    if video_id:
-        print(f"Video ID: {video_id}")
-        print(f"Video URL: https://www.youtube.com/watch?v={video_id}")
+    if videos:
+        print(f"Found {len(videos)} video(s):")
+        for vid, title in videos.items():
+            print(f"  - {title or '(no title)'}")
+            print(f"    https://www.youtube.com/watch?v={vid}")
 
     # Write preprocessed CSV
-    write_preprocessed_csv(entries, args.output)
+    write_preprocessed_csv(entries, args.output, videos)
     print(f"Wrote preprocessed data to {args.output}")
 
-    # Fetch transcript
-    transcript_path = args.output.with_suffix(".transcript.txt")
-    if not args.no_transcript and video_id:
-        print(f"\nFetching transcript from YouTube...")
-        transcript = fetch_transcript(video_id, args.lang)
-        if transcript:
-            with open(transcript_path, "w", encoding="utf-8") as f:
-                f.write(transcript)
-            print(f"Wrote transcript to {transcript_path}")
-        else:
-            print("  Could not fetch transcript")
-    elif not video_id:
+    # Fetch transcripts
+    transcript_paths = []
+    if not args.no_transcript and videos:
+        video_list = list(videos.items())
+        for i, (vid, title) in enumerate(video_list):
+            if len(video_list) == 1:
+                transcript_path = args.output.with_suffix(".transcript.txt")
+            else:
+                stem = args.output.stem
+                parent = args.output.parent
+                transcript_path = parent / f"{stem}.transcript{i + 1}.txt"
+
+            print(f"\nFetching transcript for: {title or vid}...")
+            transcript = fetch_transcript(vid, args.lang)
+            if transcript:
+                header = f"# {title}\n# https://www.youtube.com/watch?v={vid}\n\n"
+                with open(transcript_path, "w", encoding="utf-8") as f:
+                    f.write(header + transcript)
+                print(f"Wrote transcript to {transcript_path}")
+                transcript_paths.append(transcript_path)
+            else:
+                print("  Could not fetch transcript")
+    elif not videos:
         print("\nNo video ID found in export, skipping transcript fetch")
 
     print("\n" + "=" * 60)
@@ -279,8 +307,8 @@ def main():
     print("  - Chunks marked 'Is Chunk=yes' should be kept as collocations")
     print("  - Convert chunks to nominative form if needed")
     print("  - Add translations (not provided in simple CSV format)")
-    if transcript_path.exists():
-        print(f"  - Transcript available at: {transcript_path}")
+    for tp in transcript_paths:
+        print(f"  - Transcript available at: {tp}")
     print("=" * 60)
 
     return 0

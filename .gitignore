@@ -10,3 +10,6 @@ venv/
 # IDE
 .vscode/
 .idea/
+
+lesson_chats/
+kindle_cloud_reader_csv_files/
